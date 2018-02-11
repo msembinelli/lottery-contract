@@ -31,7 +31,7 @@ const deploy = async () => {
         }
     };
 
-    fs.writeFile('output.yml', YAML.stringify(output), function (err) {
+    fs.writeFile('contract.yml', YAML.stringify(output, null, 2), function (err) {
         if (err) throw err;
         console.log('Output contract abi and address saved!');
       });
