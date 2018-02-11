@@ -18,7 +18,7 @@ beforeEach(async () => {
     lottery = await new web3.eth.Contract(JSON.parse(interface))
         .deploy({ data: bytecode })
         .send({ from: accounts[0], gas: '1000000' });
-
+    
     lottery.setProvider(provider);
 });
 
@@ -88,5 +88,26 @@ describe('Lottery Contract', () => {
         } catch (err) {
             assert(err);
         }
+    });
+
+    it('sends money to winner, clears the players array, and confirms the contract balance has been emptied', async () => {
+        await lottery.methods.enter().send({
+            from: accounts[0],
+            value: web3.utils.toWei('2', 'ether')
+        });
+
+        const initialBalance = await web3.eth.getBalance(accounts[0]);
+        await lottery.methods.pickWinner().send({ from: accounts[0] });
+        const finalBalance = await web3.eth.getBalance(accounts[0]);
+        const difference = finalBalance - initialBalance;
+        assert(difference > web3.utils.toWei('1.8', 'ether'));
+
+        const players = await lottery.methods.getPlayers().call({
+            from: accounts[0]
+        });
+        assert.equal(0, players.length);
+
+        contractBalance = await web3.eth.getBalance(lottery.options.address);
+        assert.equal(0, contractBalance);
     });
 });
