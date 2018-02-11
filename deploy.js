@@ -20,7 +20,7 @@ const deploy = async () => {
 
     // Use one of those accounts to deploy the contract
     const result = await new web3.eth.Contract(JSON.parse(interface))
-        .deploy({ data: bytecode, arguments: ['Hi there!']})
+        .deploy({ data: bytecode })
         .send({ from: accounts[0], gas: '1000000' });
 
     console.log('Contract deployed to', result.options.address);
